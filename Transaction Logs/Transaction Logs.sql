@@ -8,21 +8,21 @@
 
 --    Transactions:
 --    Sender_ID	 Receiver_ID  Amount  Transaction_Date
---	    55	         22	       500	    18.05.2021
---		11	         33	       350	    19.05.2021
---		22	         11	       650	    19.05.2021
---		22	         33	       900	    20.05.2021
---		33	         11	       500	    21.05.2021
---		33	         22	       750	    21.05.2021
---		11	         44	       300	    22.05.2021
+--	    55	     22	       500	 18.05.2021
+--	    11	     33	       350	 19.05.2021
+--	    22	     11	       650	 19.05.2021
+--	    22	     33	       900	 20.05.2021
+--	    33	     11	       500	 21.05.2021
+--	    33	     22	       750	 21.05.2021
+--	    11	     44	       300	 22.05.2021
 
 --    Desired Output:
 --    Account_ID  Net_Change
---       11	        500
---       44	        300
---       33	        0
---       22	       -300
---       55	       -500
+--       11	     500
+--       44	     300
+--       33	     0
+--       22	    -300
+--       55	    -500
 
 --    /////////////////////////////////////////////////
 
@@ -70,6 +70,7 @@ VALUES
 
 --   B.	Sum amounts for each sender (debits) and receiver (credits),
 
+
 SELECT Sender_ID, SUM(Amount) AS TotalSentAmount
 FROM Transactions
 GROUP BY Sender_ID
@@ -77,6 +78,7 @@ GROUP BY Sender_ID
 SELECT Receiver_ID, SUM(Amount) AS TotalReceivedAmount
 FROM Transactions
 GROUP BY Receiver_ID
+
 
 --   ///////////////////////////////////////////////////
 
@@ -87,14 +89,14 @@ GROUP BY Receiver_ID
 
 SELECT
 	 COALESCE(s.Sender_ID, r.Receiver_ID) AS Account_ID,
-	 COALESCE(r.TotalReceivedAmount, 0)-COALESCE(s.TotalSentAmount, 0) AS Net_Change
+	 COALESCE(r.TotalReceivedAmount, 0) - COALESCE(s.TotalSentAmount, 0) AS Net_Change
 FROM 
 	 (SELECT Sender_ID, SUM(Amount) AS TotalSentAmount
 	  FROM Transactions
 	  GROUP BY Sender_ID) AS s
 	 FULL OUTER JOIN (SELECT Receiver_ID, SUM(Amount) AS TotalReceivedAmount
-					  FROM Transactions
-					  GROUP BY Receiver_ID) AS r
+			  FROM Transactions
+			  GROUP BY Receiver_ID) AS r
 	 ON s.Sender_ID=r.Receiver_ID
 ORDER BY
 	 Net_Change DESC
