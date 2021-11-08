@@ -61,7 +61,7 @@ FROM combined_table;
 SELECT Cust_id, Customer_Name, Order_Date, Ship_Date, DaysTakenForDelivery
 FROM combined_table
 WHERE DaysTakenForDelivery=(SELECT MAX(DaysTakenForDelivery)
-						    FROM combined_table)
+			    FROM combined_table)
 
 
 --//////////////////////////////////////////////////
@@ -79,11 +79,11 @@ WHERE MONTH(Order_Date)=01 AND YEAR(Order_Date)=2011;
 SELECT MONTH(Order_Date) AS [MONTH], COUNT(DISTINCT Cust_id) AS MonthlyNumOfCust
 FROM combined_table
 WHERE Cust_id IN
-	 (SELECT DISTINCT Cust_id
-	  FROM combined_table
-	  WHERE MONTH(Order_Date)=01 AND YEAR(Order_Date)=2011
-	  GROUP BY Cust_id)
-	  AND YEAR(Order_Date)=2011
+	      (SELECT DISTINCT Cust_id
+	       FROM combined_table
+	       WHERE MONTH(Order_Date)=01 AND YEAR(Order_Date)=2011
+	       GROUP BY Cust_id)
+	       AND YEAR(Order_Date)=2011
 GROUP BY MONTH(Order_Date);
 
 
@@ -116,17 +116,17 @@ WHERE
 
 
 SELECT Cust_id,
-		SUM(CASE WHEN Prod_id = 'Prod_11' THEN Order_Quantity ELSE 0 END) AS P11,
-		SUM(CASE WHEN Prod_id = 'Prod_14' THEN Order_Quantity ELSE 0 END) AS P14,
-		SUM(Order_Quantity) AS TotalProd,
-		ROUND(CAST(SUM(CASE WHEN Prod_id = 'Prod_11' THEN Order_Quantity ELSE 0 END) AS FLOAT) / SUM(Order_Quantity),2) AS RATIO_P11,
-		ROUND(CAST(SUM(CASE WHEN Prod_id = 'Prod_14' THEN Order_Quantity ELSE 0 END) AS FLOAT) / SUM(Order_Quantity),2) AS RATIO_P14
+       SUM(CASE WHEN Prod_id = 'Prod_11' THEN Order_Quantity ELSE 0 END) AS P11,
+       SUM(CASE WHEN Prod_id = 'Prod_14' THEN Order_Quantity ELSE 0 END) AS P14,
+       SUM(Order_Quantity) AS TotalProd,
+       ROUND(CAST(SUM(CASE WHEN Prod_id = 'Prod_11' THEN Order_Quantity ELSE 0 END) AS FLOAT) / SUM(Order_Quantity),2) AS RATIO_P11,
+       ROUND(CAST(SUM(CASE WHEN Prod_id = 'Prod_14' THEN Order_Quantity ELSE 0 END) AS FLOAT) / SUM(Order_Quantity),2) AS RATIO_P14
 FROM combined_table
 WHERE Cust_id IN(SELECT Cust_id
-				 FROM combined_table
-				 WHERE Prod_id IN ('Prod_11', 'Prod_14')
-				 GROUP BY Cust_id
-				 HAVING COUNT(DISTINCT Prod_id)=2)
+		 FROM combined_table
+		 WHERE Prod_id IN ('Prod_11', 'Prod_14')
+		 GROUP BY Cust_id
+		 HAVING COUNT(DISTINCT Prod_id)=2)
 GROUP BY Cust_id;
 
 
@@ -141,10 +141,10 @@ GROUP BY Cust_id;
 
 
 CREATE VIEW visit_logs AS
-	SELECT Cust_id, 
-		   YEAR(Order_Date) AS [YEAR], 
-		   MONTH(Order_Date) AS [MONTH]
-	FROM combined_table;
+       SELECT Cust_id, 
+	      YEAR(Order_Date) AS [YEAR], 
+	      MONTH(Order_Date) AS [MONTH]
+       FROM combined_table;
 
 
 SELECT *
@@ -160,12 +160,12 @@ ORDER BY Cust_id, [YEAR], [MONTH];
 
 
 CREATE VIEW monthly_visits AS
-	SELECT Cust_id, 
-		   YEAR(Order_Date) AS [YEAR], 
-		   MONTH(Order_Date) AS [MONTH],
-		   COUNT(Order_Date) AS NUM_OF_LOG
-	FROM combined_table
-	GROUP BY Cust_id, YEAR(Order_Date), MONTH(Order_Date);
+       SELECT Cust_id, 
+	      YEAR(Order_Date) AS [YEAR], 
+	      MONTH(Order_Date) AS [MONTH],
+	      COUNT(Order_Date) AS NUM_OF_LOG
+       FROM combined_table
+       GROUP BY Cust_id, YEAR(Order_Date), MONTH(Order_Date);
 
 
 SELECT * FROM monthly_visits
@@ -181,9 +181,9 @@ SELECT * FROM monthly_visits
 
 
 CREATE VIEW next_month_visits AS
-	SELECT *, LEAD(current_month) OVER(PARTITION BY Cust_id ORDER BY [YEAR], [MONTH]) AS next_visit_month
-	FROM (SELECT *, DENSE_RANK() OVER(ORDER BY [YEAR], [MONTH]) AS current_month 
-		  FROM monthly_visits) AS M
+       SELECT *, LEAD(current_month) OVER(PARTITION BY Cust_id ORDER BY [YEAR], [MONTH]) AS next_visit_month
+       FROM (SELECT *, DENSE_RANK() OVER(ORDER BY [YEAR], [MONTH]) AS current_month 
+	     FROM monthly_visits) AS M
 
 SELECT * FROM next_month_visits
 
@@ -196,8 +196,8 @@ SELECT * FROM next_month_visits
 
 
 CREATE VIEW monthly_time_gap AS
-	SELECT *, next_visit_month-current_month AS TimeGaps
-	FROM next_month_visits
+       SELECT *, next_visit_month-current_month AS TimeGaps
+       FROM next_month_visits
 
 
 SELECT * From monthly_time_gap
@@ -214,10 +214,10 @@ SELECT * From monthly_time_gap
 
 
 SELECT Cust_id, AVG(TimeGaps) AS AvgTimeGap,
-	   CASE WHEN AVG(TimeGaps) IS NULL THEN 'Churn'
-		    WHEN MAX(TimeGaps) = 1 THEN 'regular'
-		    ELSE 'irregular'	
-	   END CustLabels
+       CASE WHEN AVG(TimeGaps) IS NULL THEN 'Churn'
+	    WHEN MAX(TimeGaps) = 1 THEN 'regular'
+	    ELSE 'irregular'	
+       END CustLabels
 FROM monthly_time_gap
 GROUP BY Cust_id;
 
@@ -225,7 +225,7 @@ GROUP BY Cust_id;
 --/////////////////////////////////////////////////////
 
 
---MONTH-WÝSE RETENTÝON RATE
+--MONTH-WISE RETENTION RATE
 
 
 --Find month-by-month customer retention rate  since the start of the business.
@@ -255,14 +255,14 @@ ORDER BY Cust_id;
 
 
 WITH CTE1 AS
-	 (SELECT [YEAR], [MONTH], COUNT(Cust_id) AS TotalCustomerPerMonth,
-	  SUM(CASE WHEN TimeGaps=1 THEN 1 END) AS RetentionMonthWise
-	  FROM monthly_time_gap
-	  GROUP BY [YEAR], [MONTH])
+     (SELECT [YEAR], [MONTH], COUNT(Cust_id) AS TotalCustomerPerMonth,
+      SUM(CASE WHEN TimeGaps=1 THEN 1 END) AS RetentionMonthWise
+      FROM monthly_time_gap
+      GROUP BY [YEAR], [MONTH])
 SELECT *
 FROM(SELECT [YEAR], [MONTH], LAG(RetentionRate) OVER(ORDER BY [YEAR], [MONTH]) AS RetentionRate
-	 FROM(SELECT CTE1.[YEAR], CTE1.[MONTH],
-				 ROUND(CAST(CTE1.RetentionMonthWise AS FLOAT) / CTE1.TotalCustomerPerMonth,2) AS RetentionRate
+     FROM(SELECT CTE1.[YEAR], CTE1.[MONTH],
+		 ROUND(CAST(CTE1.RetentionMonthWise AS FLOAT) / CTE1.TotalCustomerPerMonth,2) AS RetentionRate
           FROM CTE1) AS SUBQ1) AS SUBQ2
 WHERE RetentionRate IS NOT NULL
 
