@@ -7,8 +7,8 @@
 -- (for each brand)
 
 SELECT brand_id, category_id, 
-	   MAX(list_price) AS MaxListPrice, 
-	   MIN(list_price) AS MinListPrice 
+       MAX(list_price) AS MaxListPrice, 
+       MIN(list_price) AS MinListPrice 
 FROM product.product
 GROUP BY brand_id, category_id
 HAVING MAX(list_price) > 3000 OR MIN(list_price) < 300
@@ -38,7 +38,7 @@ SELECT
     AVG(list_price) AvgPrice
 FROM
     product.product p
-	INNER JOIN product.brand b ON p.brand_id = b.brand_id
+    INNER JOIN product.brand b ON p.brand_id = b.brand_id
 WHERE
     model_year=2019
 GROUP BY
@@ -50,7 +50,7 @@ ORDER BY
 -- Write a query that returns the domain types and quantities in the customer table
 
 SELECT  
-	RIGHT(email, LEN(email)-CHARINDEX('@', email)) AS DomainType,
+        RIGHT(email, LEN(email)-CHARINDEX('@', email)) AS DomainType,
 	COUNT(RIGHT(email, LEN(email)-CHARINDEX('@', email))) AS NumofDomains
 FROM 
 	sale.customer
@@ -58,3 +58,4 @@ GROUP BY
 	RIGHT(email, LEN(email)-CHARINDEX('@', email))
 ORDER BY
 	NumofDomains DESC;
+
