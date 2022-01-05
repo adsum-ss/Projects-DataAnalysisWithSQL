@@ -11,7 +11,7 @@ use SampleSales
 
 SELECT staff_id, first_name, last_name, store_name, [state]
 FROM sale.staff AS staff
-	 INNER JOIN sale.store AS store ON staff.store_id=store.store_id
+     INNER JOIN sale.store AS store ON staff.store_id=store.store_id
 
 ----------
 
@@ -24,9 +24,9 @@ WHERE staff.store_id=store.store_id;
 
 SELECT	product_id, product_name, brand_name, category_name
 FROM	product.product AS P 
-		INNER JOIN product.brand AS B ON P.brand_id = B.brand_id
-		INNER JOIN product.category AS C ON P.category_id = C.category_id
-		AND product_id > 200
+	INNER JOIN product.brand AS B ON P.brand_id = B.brand_id
+	INNER JOIN product.category AS C ON P.category_id = C.category_id
+	AND product_id > 200
 
 
 -- //////////////////////////////////////// --
@@ -39,9 +39,9 @@ FROM	product.product AS P
 
 SELECT P.product_id, product_name, brand_name, category_name
 FROM product.product AS P
-	 LEFT JOIN sale.order_item AS O ON P.product_id=O.product_id
-	 LEFT JOIN product.brand AS B ON P.brand_id = B.brand_id
-	 LEFT JOIN product.category AS C ON P.category_id = C.category_id
+     LEFT JOIN sale.order_item AS O ON P.product_id=O.product_id
+     LEFT JOIN product.brand AS B ON P.brand_id = B.brand_id
+     LEFT JOIN product.category AS C ON P.category_id = C.category_id
 WHERE order_id IS NULL
 ORDER BY 1;
 
@@ -51,8 +51,8 @@ ORDER BY 1;
 
 SELECT S.product_id, product_name, quantity, store_name
 FROM product.stock AS S
-	 LEFT JOIN product.product AS P ON S.product_id=P.product_id
-	 LEFT JOIN sale.store ON S.store_id=sale.store.store_id
+     LEFT JOIN product.product AS P ON S.product_id=P.product_id
+     LEFT JOIN sale.store ON S.store_id=sale.store.store_id
 WHERE quantity > 20;
 
 
@@ -68,7 +68,7 @@ ORDER BY order_id DESC;
 
 SELECT p.product_id, product_name, order_id
 FROM product.product p
-	 LEFT JOIN sale.order_item o ON o.product_id = p.product_id
+     LEFT JOIN sale.order_item o ON o.product_id = p.product_id
 WHERE order_id = 100
 ORDER BY product_id;
 
@@ -87,8 +87,8 @@ WITH OrdersInfo AS
 )
 SELECT O.staff_id, first_name, last_name, TotalOrders, store_name
 FROM OrdersInfo AS O
-	 LEFT JOIN sale.staff AS staff ON O.staff_id=staff.staff_id
-	 LEFT JOIN sale.store AS store ON O.store_id=store.store_id
+     LEFT JOIN sale.staff AS staff ON O.staff_id=staff.staff_id
+     LEFT JOIN sale.store AS store ON O.store_id=store.store_id
 ORDER BY 1;
 
 
@@ -122,9 +122,9 @@ ORDER BY product_name;
 
 --Write a query that returns products with their list price that don't exist in the stock
 
-select P.product_id, product_name, list_price
-from product.stock S
-	 FULL OUTER JOIN product.product P ON S.product_id=P.product_id
+SELECT P.product_id, product_name, list_price
+FROM product.stock S
+     FULL OUTER JOIN product.product P ON S.product_id=P.product_id
 WHERE S.product_id IS NULL;
 
 
@@ -133,7 +133,7 @@ WHERE S.product_id IS NULL;
 
 SELECT TOP 20*
 FROM sale.order_item A 
-	 FULL OUTER JOIN product.stock B ON A.product_id=B.product_id
+     FULL OUTER JOIN product.stock B ON A.product_id=B.product_id
 ORDER BY B.product_id, A.order_id;
 
 
@@ -141,7 +141,7 @@ ORDER BY B.product_id, A.order_id;
 
 SELECT *
 FROM sale.order_item A 
-	 FULL OUTER JOIN product.stock B ON A.product_id=B.product_id
+     FULL OUTER JOIN product.stock B ON A.product_id=B.product_id
 WHERE A.product_id IS NULL OR B.product_id IS NULL;
 
 
@@ -184,15 +184,15 @@ ORDER BY
 
 SELECT s.store_id, s.store_name, p.product_id, ISNULL(sales, 0) sales
 FROM sale.store s
-	 CROSS JOIN product.product p
-	 LEFT JOIN (SELECT s.store_id, p.product_id, SUM (quantity * i.list_price) sales
-				FROM sale.orders o
-					 INNER JOIN sale.order_item i ON i.order_id = o.order_id
-					 INNER JOIN sale.store s ON s.store_id = o.store_id
-					 INNER JOIN product.product p ON p.product_id = i.product_id
-				GROUP BY s.store_id, p.product_id
-				) c ON c.store_id = s.store_id
-					AND c.product_id = p.product_id
+     CROSS JOIN product.product p
+     LEFT JOIN (SELECT s.store_id, p.product_id, SUM (quantity * i.list_price) sales
+		FROM sale.orders o
+		     INNER JOIN sale.order_item i ON i.order_id = o.order_id
+		     INNER JOIN sale.store s ON s.store_id = o.store_id
+		     INNER JOIN product.product p ON p.product_id = i.product_id
+		GROUP BY s.store_id, p.product_id
+		) c ON c.store_id = s.store_id
+		    AND c.product_id = p.product_id
 WHERE sales IS NULL
 ORDER BY product_id, store_id;
 
