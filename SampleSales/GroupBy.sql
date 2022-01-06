@@ -50,12 +50,28 @@ ORDER BY
 -- Write a query that returns the domain types and quantities in the customer table
 
 SELECT  
-        RIGHT(email, LEN(email)-CHARINDEX('@', email)) AS DomainType,
-	COUNT(RIGHT(email, LEN(email)-CHARINDEX('@', email))) AS NumofDomains
+    RIGHT(email, LEN(email)-CHARINDEX('@', email)) AS DomainType,
+    COUNT(RIGHT(email, LEN(email)-CHARINDEX('@', email))) AS NumofDomains
 FROM 
-	sale.customer
+    sale.customer
 GROUP BY
-	RIGHT(email, LEN(email)-CHARINDEX('@', email))
+    RIGHT(email, LEN(email)-CHARINDEX('@', email))
 ORDER BY
-	NumofDomains DESC;
+    NumofDomains DESC;
+
+
+-- Write a query that uses the ROLLUP to calculate the average, total, max and min list prices by category (subtotal) and total.
+
+SELECT 
+    ISNULL(category_name,'TOTAL') AS [Category],
+    AVG(list_price) AS [AverageListPrice],
+    SUM(list_price) AS [TotalListPrice],
+    MAX(list_price) AS [HighestListPrice],
+    MIN(list_price) AS [LeastListPrice]
+FROM 
+    product.product AS p
+    INNER JOIN product.category AS c ON p.category_id=c.category_id
+GROUP BY 
+    category_name WITH ROLLUP;
+	
 
