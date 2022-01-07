@@ -39,26 +39,26 @@ FROM product.brand
 
 SELECT * FROM
 	(SELECT 
-		brand_name,
-		YEAR(order_date) AS [OrderYear],
-		DATENAME(MM, order_date) AS [OrderMonth],
-		quantity
+	     brand_name,
+	     YEAR(order_date) AS [OrderYear],
+	     DATENAME(MM, order_date) AS [OrderMonth],
+	     quantity
 	 FROM sale.order_item oi 
-		LEFT JOIN sale.orders o ON oi.order_id=o.order_id
-		LEFT JOIN product.product p ON oi.product_id=p.product_id 
-		LEFT JOIN product.brand b ON p.brand_id=b.brand_id) AS BaseData
+	     LEFT JOIN sale.orders o ON oi.order_id=o.order_id
+	     LEFT JOIN product.product p ON oi.product_id=p.product_id 
+	     LEFT JOIN product.brand b ON p.brand_id=b.brand_id) AS BaseData
 PIVOT (
-	SUM(quantity)
-	FOR brand_name
-	IN ([Electra]
-		,[Haro]
-		,[Redline]
-		,[Cannondale]
-		,[Schwinn]
-		,[Giant]
-		,[Sun Bicycles]
-		,[Surly]
-		,[Trek])
+    SUM(quantity)
+    FOR brand_name
+    IN ([Electra]
+	,[Haro]
+	,[Redline]
+	,[Cannondale]
+	,[Schwinn]
+	,[Giant]
+	,[Sun Bicycles]
+	,[Surly]
+	,[Trek])
 ) AS PivotTable
 ORDER BY OrderYear DESC;
 
@@ -68,15 +68,15 @@ ORDER BY OrderYear DESC;
  
 SELECT * FROM
 (
-	SELECT brand_name, category_name, CAST(list_price AS INT) AS ListPrice 
-	FROM product.product AS P, product.brand AS B, product.category AS C
-	WHERE P.brand_id=B.brand_id AND P.category_id=C.category_id
+     SELECT brand_name, category_name, CAST(list_price AS INT) AS ListPrice 
+     FROM product.product AS P, product.brand AS B, product.category AS C
+     WHERE P.brand_id=B.brand_id AND P.category_id=C.category_id
 ) AS SubQ1
 PIVOT
 (
-	AVG(ListPrice)
-	FOR brand_name
-	IN([Trek],[Schwinn],[Surly],[Redline],[Electra],[Cannondale],[Haro],[Sun Bicycles],[Giant])
+     AVG(ListPrice)
+     FOR brand_name
+     IN([Trek],[Schwinn],[Surly],[Redline],[Electra],[Cannondale],[Haro],[Sun Bicycles],[Giant])
 ) AS CategoryBrandPrices
  
  
@@ -84,26 +84,26 @@ PIVOT
  
  
 SELECT category_name,
-	CONVERT(DECIMAL, ISNULL([Trek], 0)) AS [Trek],
-	CONVERT(DECIMAL, ISNULL([Schwinn], 0)) AS [Schwinn],
-	CONVERT(DECIMAL, ISNULL([Surly], 0)) AS [Surly],
-	CONVERT(DECIMAL, ISNULL([Redline], 0)) AS [Redline],
-	CONVERT(DECIMAL, ISNULL([Electra], 0)) AS [Electra],
-	CONVERT(DECIMAL, ISNULL([Cannondale], 0)) AS [Cannondale],
-	CONVERT(DECIMAL, ISNULL([Haro], 0)) AS [Haro],
-	CONVERT(DECIMAL, ISNULL([Sun Bicycles], 0)) AS [Sun Bicycles],
-	CONVERT(DECIMAL, ISNULL([Giant], 0)) AS [Giant]
+     CONVERT(DECIMAL, ISNULL([Trek], 0)) AS [Trek],
+     CONVERT(DECIMAL, ISNULL([Schwinn], 0)) AS [Schwinn],
+     CONVERT(DECIMAL, ISNULL([Surly], 0)) AS [Surly],
+     CONVERT(DECIMAL, ISNULL([Redline], 0)) AS [Redline],
+     CONVERT(DECIMAL, ISNULL([Electra], 0)) AS [Electra],
+     CONVERT(DECIMAL, ISNULL([Cannondale], 0)) AS [Cannondale],
+     CONVERT(DECIMAL, ISNULL([Haro], 0)) AS [Haro],
+     CONVERT(DECIMAL, ISNULL([Sun Bicycles], 0)) AS [Sun Bicycles],
+     CONVERT(DECIMAL, ISNULL([Giant], 0)) AS [Giant]
 FROM
 (
-	SELECT brand_name, category_name, list_price
-	FROM product.product AS P, product.brand AS B, product.category AS C
-	WHERE P.brand_id=B.brand_id AND P.category_id=C.category_id
+     SELECT brand_name, category_name, list_price
+     FROM product.product AS P, product.brand AS B, product.category AS C
+     WHERE P.brand_id=B.brand_id AND P.category_id=C.category_id
 ) AS SubQ1
 PIVOT
 (
-	AVG(list_price)
-	FOR brand_name
-	IN([Trek],[Schwinn],[Surly],[Redline],[Electra],[Cannondale],[Haro],[Sun Bicycles],[Giant])
+     AVG(list_price)
+     FOR brand_name
+     IN([Trek],[Schwinn],[Surly],[Redline],[Electra],[Cannondale],[Haro],[Sun Bicycles],[Giant])
 ) AS CategoryBrandPrices
 
 
