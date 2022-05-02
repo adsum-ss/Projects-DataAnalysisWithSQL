@@ -78,12 +78,9 @@ ORDER BY product_id;
 
 WITH OrdersInfo AS
 (
-	SELECT 
-		staff_id, store_id, COUNT(staff_id) AS TotalOrders
-	FROM 
-		sale.orders
-	GROUP BY 
-		staff_id, store_id
+    SELECT staff_id, store_id, COUNT(staff_id) AS TotalOrders
+    FROM sale.orders
+    GROUP BY staff_id, store_id
 )
 SELECT O.staff_id, first_name, last_name, TotalOrders, store_name
 FROM OrdersInfo AS O
